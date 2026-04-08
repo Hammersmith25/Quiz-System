@@ -1,2 +1,2 @@
 This is the Quiz testing platform project 
-Creators:Danil,Adiz
+Creators: Danil, Adiz, Ruslan
