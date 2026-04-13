@@ -1,0 +1,36 @@
+<div class="app-wrapper">
+  <img src="icon.png" alt="Quiz-System logo" class="login-logo" />
+
+  <div class="login-header">
+    <span class="login-brand">Quiz-System</span>
+  </div>
+
+  <div class="login-container">
+    <h2>Login</h2>
+
+    <form (ngSubmit)="onLogin()">
+      <input
+        type="text"
+        placeholder="Username"
+        [(ngModel)]="username"
+        name="username"
+        required
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+        name="password"
+        required
+      />
+      <button type="submit" [disabled]="!username || !password">
+        Login
+      </button>
+    </form>
+
+    @if (error) {
+      <p class="error-msg">{{ error }}</p>
+    }
+  </div>
+
+</div>
