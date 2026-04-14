@@ -1,10 +1,60 @@
-.home-wrapper {
+.teacher-page {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0f1113;
+  color: #e0e0e0;
+}
+
+.teacher-navbar {
+  height: 72px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #242830;
+  background: #13161c;
+}
+
+.teacher-brand {
+  color: #4fffb0;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.nav-actions button {
+  border: 1px solid #3a3f47;
+  background: transparent;
+  color: #d2d6dc;
+  border-radius: 10px;
+  padding: 0.5rem 0.9rem;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-actions button:hover {
+  border-color: #4fffb0;
+  color: #4fffb0;
+}
+
+.nav-actions button.active {
+  border-color: #4fffb0;
+  background: #4fffb0;
+  color: #12141a;
+}
+
+.teacher-content {
+  flex: 1;
   display: grid;
   place-content: center;
   text-align: center;
-  background: #0f1113;
-  color: #e0e0e0;
   padding: 2rem;
 }
 
@@ -16,4 +66,13 @@ h1 {
 p {
   margin: 0;
   color: #9aa0a8;
+}
+
+@media (max-width: 600px) {
+  .teacher-navbar {
+    flex-direction: column;
+    height: auto;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+  }
 }

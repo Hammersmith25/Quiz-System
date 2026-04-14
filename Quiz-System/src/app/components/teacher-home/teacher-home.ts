@@ -6,4 +6,10 @@ import { Component } from '@angular/core';
   templateUrl: './teacher-home.html',
   styleUrl: './teacher-home.css'
 })
-export class TeacherHomeComponent {}
+export class TeacherHomeComponent {
+  activeSection: 'create' | 'results' = 'create';
+
+  setSection(section: 'create' | 'results') {
+    this.activeSection = section;
+  }
+}
