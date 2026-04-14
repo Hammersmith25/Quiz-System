@@ -24,7 +24,12 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+
   login(credentials: any) {
     return this.http.post('http://localhost:8000/api/login/', credentials);
+  }
+
+  register(payload: any) {
+    return this.http.post('http://localhost:8000/api/register/', payload);
   }
 }

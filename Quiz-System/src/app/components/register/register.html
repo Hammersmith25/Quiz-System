@@ -1,0 +1,92 @@
+<div class="app-wrapper">
+  <img src="/icon.png" alt="Quiz-System logo" class="register-logo" />
+
+  <div class="register-header">
+    <span class="register-brand">Quiz-System</span>
+  </div>
+
+  <div class="register-container">
+    <h2>Register</h2>
+
+    <form (ngSubmit)="onRegister()">
+      <input
+        type="text"
+        placeholder="Username"
+        [(ngModel)]="username"
+        name="username"
+        required
+      />
+      <input
+        type="email"
+        placeholder="Email"
+        [(ngModel)]="email"
+        name="email"
+        required
+      />
+      <input
+        type="text"
+        placeholder="Department"
+        [(ngModel)]="department"
+        name="department"
+        required
+      />
+      <div class="role-group">
+        <span class="role-label">Role</span>
+        <label>
+          <input
+            type="radio"
+            name="role"
+            value="Student"
+            [(ngModel)]="role"
+            required
+          />
+          Student
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="role"
+            value="Teacher"
+            [(ngModel)]="role"
+            required
+          />
+          Teacher
+        </label>
+      </div>
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+        name="password"
+        required
+      />
+      <input
+        type="password"
+        placeholder="Confirm password"
+        [(ngModel)]="confirmPassword"
+        name="confirmPassword"
+        required
+      />
+
+      <button
+        type="submit"
+        [disabled]="!username || !email || !department || !role || !password || !confirmPassword"
+      >
+        Create Account
+      </button>
+    </form>
+
+    @if (error) {
+      <p class="error-msg">{{ error }}</p>
+    }
+
+    @if (success) {
+      <p class="success-msg">{{ success }}</p>
+    }
+
+    <p class="auth-switch">
+      Already have an account?
+      <a routerLink="/">Login</a>
+    </p>
+  </div>
+</div>

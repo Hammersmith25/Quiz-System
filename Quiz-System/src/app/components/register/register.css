@@ -11,14 +11,14 @@
   box-sizing: border-box;
 }
 
-.login-header {
+.register-header {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
 }
 
-.login-logo {
+.register-logo {
   width: 68px;
   height: 68px;
   object-fit: contain;
@@ -28,7 +28,7 @@
   left: 1.5rem;
 }
 
-.login-brand {
+.register-brand {
   font-size: 48px;
   font-weight: 800;
   color: #4fffb0;
@@ -39,7 +39,7 @@
   transform: translateY(-1.25rem);
 }
 
-.login-container {
+.register-container {
   width: min(320px, 100%);
   padding: 2.5rem 2rem;
   background: #1a1d1f;
@@ -50,7 +50,7 @@
   gap: 1.25rem;
 }
 
-.login-container h2 {
+.register-container h2 {
   color: #4fffb0;
   font-size: 20px;
   font-weight: 700;
@@ -58,14 +58,14 @@
   letter-spacing: 0.5px;
 }
 
-.login-container form {
+.register-container form {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
 }
 
-.login-container input {
+.register-container input:not([type="radio"]) {
   width: 100%;
   padding: 0.65rem 1rem;
   background: #12141a;
@@ -78,15 +78,40 @@
   transition: border-color 0.2s;
 }
 
-.login-container input::placeholder {
+.register-container input:not([type="radio"])::placeholder {
   color: #555a63;
 }
 
-.login-container input:focus {
+.register-container input:not([type="radio"]):focus {
   border-color: #4fffb0;
 }
 
-.login-container button[type="submit"] {
+.role-group {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #c5c9ce;
+  font-size: 14px;
+}
+
+.role-label {
+  color: #9aa0a8;
+  font-weight: 600;
+}
+
+.role-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.role-group input[type="radio"] {
+  accent-color: #4fffb0;
+}
+
+.register-container button[type="submit"] {
   width: 100%;
   padding: 0.7rem;
   background: transparent;
@@ -101,12 +126,12 @@
   margin-top: 0.25rem;
 }
 
-.login-container button[type="submit"]:hover:not(:disabled) {
+.register-container button[type="submit"]:hover:not(:disabled) {
   background: #4fffb0;
   color: #12141a;
 }
 
-.login-container button[type="submit"]:disabled {
+.register-container button[type="submit"]:disabled {
   border-color: #2a2e33;
   color: #555a63;
   cursor: not-allowed;
@@ -114,6 +139,12 @@
 
 .error-msg {
   color: #ff6b6b;
+  font-size: 13px;
+  margin: 0;
+}
+
+.success-msg {
+  color: #4fffb0;
   font-size: 13px;
   margin: 0;
 }
@@ -138,20 +169,20 @@
     padding: 5rem 1rem 1.5rem;
   }
 
-  .login-logo {
+  .register-logo {
     top: 1rem;
     left: 1rem;
     width: 54px;
     height: 54px;
   }
 
-  .login-brand {
+  .register-brand {
     font-size: 38px;
     margin-bottom: 0.75rem;
     transform: translateY(-0.75rem);
   }
 
-  .login-container {
+  .register-container {
     padding: 2rem 1.25rem;
   }
 }
