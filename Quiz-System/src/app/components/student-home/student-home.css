@@ -1,0 +1,19 @@
+.home-wrapper {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: #0f1113;
+  color: #e0e0e0;
+  padding: 2rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  color: #4fffb0;
+}
+
+p {
+  margin: 0;
+  color: #9aa0a8;
+}

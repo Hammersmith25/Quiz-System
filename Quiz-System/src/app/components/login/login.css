@@ -133,6 +133,45 @@
   text-decoration: underline;
 }
 
+.mock-access {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  background: rgba(18, 20, 26, 0.9);
+  border: 1px solid #2a2e33;
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mock-access p {
+  margin: 0;
+  color: #9aa0a8;
+  font-size: 12px;
+}
+
+.mock-actions {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.mock-actions button {
+  border: 1px solid #4fffb0;
+  background: transparent;
+  color: #4fffb0;
+  border-radius: 8px;
+  padding: 0.3rem 0.55rem;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mock-actions button:hover {
+  background: #4fffb0;
+  color: #12141a;
+}
+
 @media (max-width: 600px) {
   .app-wrapper {
     padding: 5rem 1rem 1.5rem;
@@ -153,5 +192,10 @@
 
   .login-container {
     padding: 2rem 1.25rem;
+  }
+
+  .mock-access {
+    left: 0.75rem;
+    bottom: 0.75rem;
   }
 }

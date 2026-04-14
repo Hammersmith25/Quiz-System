@@ -70,9 +70,9 @@
 
       <button
         type="submit"
-        [disabled]="!username || !email || !department || !role || !password || !confirmPassword"
+        [disabled]="isSubmitting || !username || !email || !department || !role || !password || !confirmPassword"
       >
-        Create Account
+        {{ isSubmitting ? 'Creating...' : 'Create Account' }}
       </button>
     </form>
 

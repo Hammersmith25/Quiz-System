@@ -19,6 +19,7 @@ export class RegisterComponent {
   confirmPassword = '';
   error = '';
   success = '';
+  isSubmitting = false;
 
   constructor(
     private auth: AuthService,
@@ -28,9 +29,11 @@ export class RegisterComponent {
   onRegister() {
     this.error = '';
     this.success = '';
+    this.isSubmitting = true;
 
     if (this.password !== this.confirmPassword) {
       this.error = 'Passwords do not match';
+      this.isSubmitting = false;
       return;
     }
 
@@ -43,15 +46,26 @@ export class RegisterComponent {
     };
 
     this.auth.register(data).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.success = 'Account created successfully';
+        this.isSubmitting = false;
 
-        setTimeout(() => {
-          this.router.navigate(['/']);
-        }, 800);
+        const role = res?.role ?? res?.user?.role ?? this.role;
+        if (res?.access) {
+          this.auth.setToken(res.access);
+          this.auth.setRole(role);
+          this.router.navigate([this.auth.getRoleHomeRoute(role)], { replaceUrl: true });
+          return;
+        }
+
+        this.router.navigate(['/'], { replaceUrl: true });
       },
-      error: () => {
-        this.error = 'Unable to create account';
+      error: (err) => {
+        this.isSubmitting = false;
+        this.error =
+          err?.error?.detail ??
+          err?.error?.message ??
+          'Unable to create account';
       }
     });
   }
