@@ -1,4 +1,31 @@
-<div class="home-wrapper">
-  <h1>Student Dashboard</h1>
-  <p>You are logged in as Student.</p>
+<div class="student-page">
+  <nav class="student-navbar">
+    <span class="student-brand">Student Panel</span>
+    <div class="nav-actions">
+      <button
+        type="button"
+        [class.active]="activeSection === 'quizzes'"
+        (click)="setSection('quizzes')"
+      >
+        Available Quizzes
+      </button>
+      <button
+        type="button"
+        [class.active]="activeSection === 'results'"
+        (click)="setSection('results')"
+      >
+        My Results
+      </button>
+    </div>
+  </nav>
+
+  <section class="student-content">
+    @if (activeSection === 'quizzes') {
+      <h1>Available Quizzes</h1>
+      <p>Here you will see quizzes assigned to you.</p>
+    } @else {
+      <h1>My Results</h1>
+      <p>Your past quiz results will appear here.</p>
+    }
+  </section>
 </div>
