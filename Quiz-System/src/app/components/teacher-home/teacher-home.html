@@ -1,31 +1,307 @@
 <div class="teacher-page">
-  <nav class="teacher-navbar">
-    <span class="teacher-brand">Teacher Panel</span>
-    <div class="nav-actions">
-      <button
-        type="button"
-        [class.active]="activeSection === 'create'"
-        (click)="setSection('create')"
-      >
-        Create Quiz
-      </button>
-      <button
-        type="button"
-        [class.active]="activeSection === 'results'"
-        (click)="setSection('results')"
-      >
-        Results
-      </button>
+  <header class="teacher-hero">
+    <div>
+      <p class="eyebrow">Teacher dashboard</p>
+      <h1>Build quizzes, publish them, and track every student attempt.</h1>
+      <p class="hero-copy">
+        Manage your full assessment workflow from one place. Draft questions, switch quizzes live,
+        and review the score table per quiz without leaving the teacher workspace.
+      </p>
     </div>
+
+    <div class="hero-card">
+      <span class="hero-label">Signed in as</span>
+      <strong>{{ teacherName }}</strong>
+      <span>{{ quizzes.length }} quizzes in your library</span>
+      <span>{{ totalPoints }} total points in the active draft</span>
+    </div>
+  </header>
+
+  <nav class="teacher-navbar">
+    <button type="button" [class.active]="activeSection === 'list'" (click)="setSection('list')">
+      Quiz Library
+    </button>
+    <button type="button" [class.active]="activeSection === 'builder'" (click)="setSection('builder')">
+      Builder
+    </button>
+    <button type="button" [class.active]="activeSection === 'results'" (click)="setSection('results')">
+      Results
+    </button>
+    <button type="button" class="accent-button" (click)="createQuiz()">New Quiz</button>
   </nav>
 
-  <section class="teacher-content">
-    @if (activeSection === 'create') {
-      <h1>Create Quiz</h1>
-      <p>Quiz creation tools will appear here.</p>
-    } @else {
-      <h1>Results</h1>
-      <p>Student quiz results will appear here.</p>
-    }
-  </section>
+  @if (activeSection === 'list') {
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="section-tag">Quiz list page</p>
+          <h2>Your quizzes</h2>
+        </div>
+        <button type="button" class="accent-button" (click)="createQuiz()">Create quiz</button>
+      </div>
+
+      @if (listError) {
+        <p class="feedback error">{{ listError }}</p>
+      }
+
+      @if (isLoadingQuizzes) {
+        <p class="state-copy">Loading your quizzes...</p>
+      } @else if (quizzes.length === 0) {
+        <div class="empty-state">
+          <h3>No quizzes yet</h3>
+          <p>Start with a fresh draft and add questions, options, and correct answers in the builder.</p>
+        </div>
+      } @else {
+        <div class="quiz-grid">
+          @for (quiz of quizzes; track trackByQuizId($index, quiz)) {
+            <article class="quiz-card">
+              <div class="quiz-card-top">
+                <span class="status-pill" [class.live]="quiz.is_published">
+                  {{ quiz.is_published ? 'Published' : 'Draft' }}
+                </span>
+                <span class="meta-pill">{{ quiz.questions.length }} questions</span>
+              </div>
+
+              <h3>{{ quiz.title }}</h3>
+              <p>{{ quiz.description || 'No description yet.' }}</p>
+
+              <div class="quiz-metrics">
+                <span>{{ quiz.questions.length }} items</span>
+                <span>{{ formatDate(quiz.updated_at) }}</span>
+              </div>
+
+              <div class="quiz-actions">
+                <button type="button" (click)="editQuiz(quiz)">Edit</button>
+                <button type="button" (click)="duplicateQuiz(quiz)">Duplicate</button>
+                <button type="button" (click)="togglePublish(quiz)">
+                  {{ quiz.is_published ? 'Unpublish' : 'Publish' }}
+                </button>
+                <button type="button" (click)="showResults(quiz)">Results</button>
+                <button type="button" class="danger-button" (click)="deleteQuiz(quiz)">Delete</button>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  }
+
+  @if (activeSection === 'builder') {
+    <section class="panel builder-panel">
+      <div class="panel-header">
+        <div>
+          <p class="section-tag">Quiz builder</p>
+          <h2>{{ builderHeading }}</h2>
+        </div>
+        <div class="builder-summary">
+          <span>{{ questionForms.length }} questions</span>
+          <span>{{ totalPoints }} points total</span>
+        </div>
+      </div>
+
+      @if (builderError) {
+        <p class="feedback error">{{ builderError }}</p>
+      }
+
+      @if (builderSuccess) {
+        <p class="feedback success">{{ builderSuccess }}</p>
+      }
+
+      <form class="builder-form" [formGroup]="quizForm" (ngSubmit)="saveQuiz()">
+        <div class="builder-basics">
+          <label>
+            Quiz title
+            <input type="text" formControlName="title" placeholder="Python Basics Midterm" />
+          </label>
+
+          <label>
+            Description
+            <textarea
+              formControlName="description"
+              rows="3"
+              placeholder="Short context, instructions, or what students should prepare."
+            ></textarea>
+          </label>
+        </div>
+
+        <div class="questions-header">
+          <div>
+            <p class="section-tag">Add questions</p>
+            <h3>Question set</h3>
+          </div>
+          <button type="button" class="accent-button" (click)="addQuestion()">Add question</button>
+        </div>
+
+        <div formArrayName="questions" class="question-list">
+          @for (question of questionForms.controls; track trackByQuestionIndex($index); let questionIndex = $index) {
+            <section class="question-card" [formGroupName]="questionIndex">
+              <div class="question-card-header">
+                <div>
+                  <span class="question-index">Question {{ questionIndex + 1 }}</span>
+                  <h4>{{ questionTypeLabel(question.get('question_type')?.value) }}</h4>
+                </div>
+                <button type="button" class="ghost-button" (click)="removeQuestion(questionIndex)">
+                  Remove
+                </button>
+              </div>
+
+              <div class="question-grid">
+                <label class="question-span">
+                  Prompt
+                  <textarea
+                    formControlName="text"
+                    rows="2"
+                    placeholder="Write the question students will see."
+                  ></textarea>
+                </label>
+
+                <label>
+                  Type
+                  <select formControlName="question_type" (change)="onQuestionTypeChange(questionIndex)">
+                    <option value="multiple_choice">Multiple choice</option>
+                    <option value="true_false">True / False</option>
+                    <option value="short_answer">Short answer</option>
+                  </select>
+                </label>
+
+                <label>
+                  Points
+                  <input type="number" formControlName="points" min="1" />
+                </label>
+              </div>
+
+              @if (question.get('question_type')?.value === 'short_answer') {
+                <label>
+                  Correct answer
+                  <input
+                    type="text"
+                    formControlName="correct_text_answer"
+                    placeholder="Exact answer used for grading"
+                  />
+                </label>
+              } @else {
+                <div class="options-shell">
+                  <div class="options-header">
+                    <div>
+                      <p class="section-tag">Set correct answers</p>
+                      <h4>Options</h4>
+                    </div>
+
+                    @if (question.get('question_type')?.value === 'multiple_choice') {
+                      <button type="button" class="ghost-button" (click)="addOption(questionIndex)">
+                        Add option
+                      </button>
+                    }
+                  </div>
+
+                  <div formArrayName="answer_options" class="option-list">
+                    @for (option of answerOptions(questionIndex).controls; track trackByQuestionIndex($index); let optionIndex = $index) {
+                      <div class="option-row" [formGroupName]="optionIndex">
+                        <button
+                          type="button"
+                          class="option-toggle"
+                          [class.selected]="option.get('is_correct')?.value"
+                          (click)="markOptionCorrect(questionIndex, optionIndex)"
+                        >
+                          {{ option.get('is_correct')?.value ? 'Correct' : 'Mark correct' }}
+                        </button>
+
+                        <input
+                          type="text"
+                          formControlName="text"
+                          [readonly]="question.get('question_type')?.value === 'true_false'"
+                          placeholder="Answer option"
+                        />
+
+                        @if (question.get('question_type')?.value === 'multiple_choice') {
+                          <button
+                            type="button"
+                            class="ghost-button"
+                            (click)="removeOption(questionIndex, optionIndex)"
+                          >
+                            Remove
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </section>
+          }
+        </div>
+
+        <div class="builder-actions">
+          <button type="button" class="ghost-button" (click)="createQuiz()">Reset draft</button>
+          <button type="submit" class="accent-button" [disabled]="isSavingQuiz">
+            {{ isSavingQuiz ? 'Saving...' : builderButtonLabel }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (activeSection === 'results') {
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="section-tag">Results page</p>
+          <h2>Student scores by quiz</h2>
+        </div>
+
+        <label class="results-select">
+          Quiz
+          <select [value]="selectedResultsQuizId ?? ''" (change)="onResultsQuizChange($event)">
+            <option value="" disabled>Select a quiz</option>
+            @for (quiz of quizzes; track trackByQuizId($index, quiz)) {
+              <option [value]="quiz.id">{{ quiz.title }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      @if (resultsError) {
+        <p class="feedback error">{{ resultsError }}</p>
+      }
+
+      @if (selectedResultsQuizId === null) {
+        <div class="empty-state">
+          <h3>No quiz selected</h3>
+          <p>Choose a quiz to see the student score table.</p>
+        </div>
+      } @else if (isLoadingResults) {
+        <p class="state-copy">Loading results...</p>
+      } @else if (quizResults.length === 0) {
+        <div class="empty-state">
+          <h3>No submissions yet</h3>
+          <p>{{ selectedResultsQuiz?.title || 'This quiz' }} does not have any student attempts yet.</p>
+        </div>
+      } @else {
+        <div class="results-table-shell">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Score</th>
+                <th>Percentage</th>
+                <th>Grade</th>
+                <th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (result of quizResults; track trackByResultId($index, result)) {
+                <tr>
+                  <td>{{ result.student_username }}</td>
+                  <td>{{ result.score }} / {{ result.max_score }}</td>
+                  <td>{{ result.percentage }}%</td>
+                  <td>{{ result.letter_grade }}</td>
+                  <td>{{ formatDate(result.submitted_at) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  }
 </div>
