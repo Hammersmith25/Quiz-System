@@ -13,7 +13,6 @@ import { AuthService } from '../../services/auth';
 export class RegisterComponent {
   username = '';
   email = '';
-  department = '';
   role = '';
   password = '';
   confirmPassword = '';
@@ -40,7 +39,6 @@ export class RegisterComponent {
     const data = {
       username: this.username,
       email: this.email,
-      department: this.department,
       role: this.role,
       password: this.password
     };

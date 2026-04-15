@@ -23,20 +23,13 @@
         name="email"
         required
       />
-      <input
-        type="text"
-        placeholder="Department"
-        [(ngModel)]="department"
-        name="department"
-        required
-      />
       <div class="role-group">
         <span class="role-label">Role</span>
         <label>
           <input
             type="radio"
             name="role"
-            value="Student"
+            value="student"
             [(ngModel)]="role"
             required
           />
@@ -46,7 +39,7 @@
           <input
             type="radio"
             name="role"
-            value="Teacher"
+            value="teacher"
             [(ngModel)]="role"
             required
           />
@@ -70,7 +63,7 @@
 
       <button
         type="submit"
-        [disabled]="isSubmitting || !username || !email || !department || !role || !password || !confirmPassword"
+        [disabled]="isSubmitting || !username || !email || !role || !password || !confirmPassword"
       >
         {{ isSubmitting ? 'Creating...' : 'Create Account' }}
       </button>

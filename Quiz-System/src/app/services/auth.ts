@@ -62,11 +62,11 @@ export class AuthService {
   }
 
   login(credentials: any) {
-    return this.http.post('http://localhost:8000/api/login/', credentials);
+    return this.http.post('http://localhost:8000/api/auth/login/', credentials);
   }
 
   register(payload: any) {
-    return this.http.post('http://localhost:8000/api/register/', payload);
+    return this.http.post('http://localhost:8000/api/auth/register/', payload);
   }
 
   private normalizeRole(role: string): string {
