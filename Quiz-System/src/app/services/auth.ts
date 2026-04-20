@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,6 +9,7 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   private tokenKey = 'token';
+  private refreshTokenKey = 'refresh';
   private roleKey = 'role';
 
   setToken(token: string) {
@@ -18,8 +20,20 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  setRefreshToken(token: string) {
+    localStorage.setItem(this.refreshTokenKey, token);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.refreshTokenKey);
+  }
+
   removeToken() {
     localStorage.removeItem(this.tokenKey);
+  }
+
+  removeRefreshToken() {
+    localStorage.removeItem(this.refreshTokenKey);
   }
 
   setRole(role: string) {
@@ -49,6 +63,7 @@ export class AuthService {
 
   clearAuth() {
     this.removeToken();
+    this.removeRefreshToken();
     localStorage.removeItem(this.roleKey);
   }
 
@@ -63,6 +78,15 @@ export class AuthService {
 
   login(credentials: any) {
     return this.http.post('http://localhost:8000/api/auth/login/', credentials);
+  }
+
+  logout(): Observable<unknown> {
+    const refresh = this.getRefreshToken();
+    if (!refresh) {
+      return of(null);
+    }
+
+    return this.http.post('http://localhost:8000/api/auth/logout/', { refresh });
   }
 
   register(payload: any) {

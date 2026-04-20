@@ -94,6 +94,29 @@
   color: #092127;
 }
 
+.logout-button {
+  margin-top: 0.5rem;
+  border: 1px solid rgba(255, 130, 130, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffb3b3;
+  padding: 0.75rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.logout-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 130, 130, 0.52);
+}
+
+.logout-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
 .student-content {
   padding: 1.5rem;
 }
