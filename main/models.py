@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -8,6 +9,9 @@ class User(AbstractUser):
         STUDENT = 'student', 'Student'
 
     role = models.CharField(max_length=20, choices=Roles.choices)
+    department = models.CharField(max_length=120, blank=True)
+    group_name = models.CharField(max_length=120, blank=True)
+    student_identifier = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return f'{self.username} ({self.role})'
@@ -16,6 +20,8 @@ class User(AbstractUser):
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
+    duration = models.PositiveIntegerField(default=30)
+    max_score = models.PositiveIntegerField(default=0)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quizzes')
     is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -54,15 +60,22 @@ class AnswerOption(models.Model):
 
 
 class Attempt(models.Model):
+    class AttemptStatus(models.TextChoices):
+        STARTED = 'started', 'Started'
+        SUBMITTED = 'submitted', 'Submitted'
+        GRADED = 'graded', 'Graded'
+
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='attempts')
     student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='attempts')
+    started_at = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=20, choices=AttemptStatus.choices, default=AttemptStatus.STARTED)
     score = models.PositiveIntegerField(default=0)
     max_score = models.PositiveIntegerField(default=0)
     percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    submitted_at = models.DateTimeField(auto_now_add=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ['-submitted_at']
+        ordering = ['-started_at']
 
     def __str__(self):
         return f'{self.student.username} - {self.quiz.title}'
