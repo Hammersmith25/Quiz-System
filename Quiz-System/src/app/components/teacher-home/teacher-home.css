@@ -121,6 +121,7 @@
 .questions-header,
 .options-header,
 .question-card-header,
+.builder-question-action,
 .builder-actions,
 .quiz-card-top,
 .quiz-metrics,
@@ -133,6 +134,10 @@
 .panel-header,
 .questions-header {
   align-items: center;
+}
+
+.builder-question-action {
+  justify-content: flex-end;
 }
 
 .builder-summary,
@@ -360,6 +365,7 @@ select:focus {
   .quiz-card-top,
   .question-card-header,
   .options-header,
+  .builder-question-action,
   .builder-actions {
     flex-direction: column;
     align-items: stretch;

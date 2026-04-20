@@ -22,12 +22,11 @@
       Quiz Library
     </button>
     <button type="button" [class.active]="activeSection === 'builder'" (click)="setSection('builder')">
-      Builder
+      New quiz
     </button>
     <button type="button" [class.active]="activeSection === 'results'" (click)="setSection('results')">
       Results
     </button>
-    <button type="button" class="accent-button" (click)="createQuiz()">New Quiz</button>
   </nav>
 
   @if (activeSection === 'list') {
@@ -129,7 +128,6 @@
             <p class="section-tag">Add questions</p>
             <h3>Question set</h3>
           </div>
-          <button type="button" class="accent-button" (click)="addQuestion()">Add question</button>
         </div>
 
         <div formArrayName="questions" class="question-list">
@@ -229,6 +227,10 @@
               }
             </section>
           }
+        </div>
+
+        <div class="builder-question-action">
+          <button type="button" class="accent-button" (click)="addQuestion()">Add question</button>
         </div>
 
         <div class="builder-actions">
