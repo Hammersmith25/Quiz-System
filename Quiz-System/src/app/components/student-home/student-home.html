@@ -1,31 +1,30 @@
-<div class="student-page">
-  <nav class="student-navbar">
-    <span class="student-brand">Student Panel</span>
-    <div class="nav-actions">
-      <button
-        type="button"
-        [class.active]="activeSection === 'quizzes'"
-        (click)="setSection('quizzes')"
-      >
-        Available Quizzes
-      </button>
-      <button
-        type="button"
-        [class.active]="activeSection === 'results'"
-        (click)="setSection('results')"
-      >
-        My Results
-      </button>
+<div class="student-shell">
+  <header class="student-hero">
+    <div>
+      <p class="eyebrow">Student dashboard</p>
+      <h1>Take quizzes, track your progress, and review every graded attempt.</h1>
+      <p class="hero-copy">
+        Move through the full student workflow from one place. Open published quizzes, stay on top
+        of timed attempts, and come back to your grade history for a detailed answer breakdown.
+      </p>
     </div>
+
+    <div class="hero-card">
+      <span class="hero-label">Signed in as</span>
+      <strong>{{ studentName }}</strong>
+      <span>Published quizzes only</span>
+      <span>Timed attempts and results</span>
+    </div>
+  </header>
+
+  <nav class="student-navbar">
+    <a routerLink="/student/quizzes" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      Quiz Library
+    </a>
+    <a routerLink="/student/grades" routerLinkActive="active">Results</a>
   </nav>
 
-  <section class="student-content">
-    @if (activeSection === 'quizzes') {
-      <h1>Available Quizzes</h1>
-      <p>Here you will see quizzes assigned to you.</p>
-    } @else {
-      <h1>My Results</h1>
-      <p>Your past quiz results will appear here.</p>
-    }
-  </section>
+  <main class="student-content">
+    <router-outlet />
+  </main>
 </div>

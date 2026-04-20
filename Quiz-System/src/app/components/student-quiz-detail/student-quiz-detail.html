@@ -1,0 +1,46 @@
+<section class="panel">
+  <a class="back-link" routerLink="/student/quizzes">Back to quizzes</a>
+
+  @if (error) {
+    <p class="feedback error">{{ error }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="state-copy">Loading quiz details...</p>
+  } @else if (quiz) {
+    <article class="detail-card">
+      <div class="detail-top">
+        <div>
+          <p class="section-tag">Quiz detail</p>
+          <h2>{{ quiz.title }}</h2>
+          <p class="description">{{ quiz.description || 'No description provided for this quiz.' }}</p>
+        </div>
+
+        <div class="summary-card">
+          <span>{{ quiz.duration }} minutes</span>
+          <span>{{ quiz.questions.length }} questions</span>
+          <span>{{ quiz.max_score }} total points</span>
+        </div>
+      </div>
+
+      <div class="question-preview-list">
+        @for (question of quiz.questions; track question.id; let index = $index) {
+          <div class="question-preview">
+            <strong>Q{{ index + 1 }}</strong>
+            <span>{{ question.text }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="actions">
+        @if (resumeAttemptId) {
+          <button type="button" class="accent-button" (click)="startQuiz()">Resume active attempt</button>
+        } @else {
+          <button type="button" class="accent-button" [disabled]="isStarting" (click)="startQuiz()">
+            {{ isStarting ? 'Starting quiz...' : 'Start quiz' }}
+          </button>
+        }
+      </div>
+    </article>
+  }
+</section>

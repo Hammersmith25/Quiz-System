@@ -1,0 +1,35 @@
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.grade-a {
+  background: rgba(29, 201, 115, 0.18);
+  color: #14733f;
+}
+
+.grade-b {
+  background: rgba(87, 200, 255, 0.18);
+  color: #165b86;
+}
+
+.grade-c {
+  background: rgba(255, 182, 72, 0.18);
+  color: #8f5300;
+}
+
+.grade-f {
+  background: rgba(229, 82, 82, 0.16);
+  color: #8e1d1d;
+}
+
+.grade-neutral {
+  background: rgba(90, 75, 52, 0.12);
+  color: #5a4b34;
+}

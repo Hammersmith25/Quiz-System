@@ -1,0 +1,38 @@
+<section class="panel">
+  <a class="back-link" routerLink="/student/grades">Back to grades</a>
+
+  @if (error) {
+    <p class="feedback error">{{ error }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="state-copy">Loading attempt detail...</p>
+  } @else if (attempt) {
+    <article class="detail-card">
+      <div class="detail-head">
+        <div>
+          <p class="section-tag">Attempt detail</p>
+          <h2>{{ attempt.quiz_summary.title }}</h2>
+          <p class="subtitle">
+            {{ attempt.score }} / {{ attempt.max_score }} points • {{ attempt.percentage }}%
+          </p>
+        </div>
+        <app-grade-badge [grade]="attempt.grade?.letter_grade" />
+      </div>
+
+      <div class="answer-list">
+        @for (answer of attempt.answers; track answer.question; let index = $index) {
+          <div class="answer-card" [class.correct]="answer.is_correct" [class.wrong]="!answer.is_correct">
+            <div class="answer-head">
+              <strong>Question {{ index + 1 }}</strong>
+              <span>{{ answer.is_correct ? 'Correct' : 'Wrong' }}</span>
+            </div>
+            <p class="question-text">{{ answer.question_text }}</p>
+            <p><strong>Your answer:</strong> {{ selectedAnswerText(answer) }}</p>
+            <p><strong>Correct answer:</strong> {{ correctAnswerText(answer) }}</p>
+          </div>
+        }
+      </div>
+    </article>
+  }
+</section>

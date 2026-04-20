@@ -1,0 +1,50 @@
+<section class="panel">
+  <div class="panel-header">
+    <div>
+      <p class="section-tag">Grade history</p>
+      <h2>All past attempts</h2>
+    </div>
+  </div>
+
+  @if (error) {
+    <p class="feedback error">{{ error }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="state-copy">Loading grades...</p>
+  } @else if (attempts.length === 0) {
+    <div class="empty-state">
+      <h3>No attempts yet</h3>
+      <p>Once you submit a quiz, the score and grade will appear here.</p>
+    </div>
+  } @else {
+    <div class="table-shell">
+      <table>
+        <thead>
+          <tr>
+            <th>Quiz</th>
+            <th>Score</th>
+            <th>Percentage</th>
+            <th>Grade</th>
+            <th>Submitted</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (attempt of attempts; track attempt.id) {
+            <tr>
+              <td>{{ attempt.quiz_title }}</td>
+              <td>{{ attempt.score }} / {{ attempt.max_score }}</td>
+              <td>{{ attempt.percentage }}%</td>
+              <td><app-grade-badge [grade]="attempt.letter_grade" /></td>
+              <td>{{ formatDate(attempt.submitted_at) }}</td>
+              <td>
+                <a [routerLink]="['/student/attempts', attempt.id]">View detail</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

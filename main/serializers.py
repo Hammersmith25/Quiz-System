@@ -107,10 +107,16 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class StudentQuestionSerializer(serializers.ModelSerializer):
     answer_options = StudentAnswerOptionSerializer(many=True, read_only=True)
+    allows_multiple_answers = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
-        fields = ('id', 'text', 'question_type', 'points', 'answer_options')
+        fields = ('id', 'text', 'question_type', 'points', 'allows_multiple_answers', 'answer_options')
+
+    def get_allows_multiple_answers(self, obj):
+        if obj.question_type != Question.QuestionTypes.MULTIPLE_CHOICE:
+            return False
+        return obj.answer_options.filter(is_correct=True).count() > 1
 
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -190,6 +196,11 @@ class StudentQuizSerializer(serializers.ModelSerializer):
 class StudentAnswerInputSerializer(serializers.Serializer):
     question = serializers.IntegerField()
     selected_option = serializers.IntegerField(required=False)
+    selected_options = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        allow_empty=True,
+    )
     text_answer = serializers.CharField(required=False, allow_blank=True)
 
 
@@ -198,13 +209,50 @@ class SubmitAttemptSerializer(serializers.Serializer):
     answers = StudentAnswerInputSerializer(many=True)
 
 
+class AttemptQuizSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz
+        fields = ('id', 'title', 'description', 'duration', 'max_score')
+
+
 class StudentAnswerResultSerializer(serializers.ModelSerializer):
     question_text = serializers.CharField(source='question.text', read_only=True)
+    question_type = serializers.CharField(source='question.question_type', read_only=True)
     selected_option_text = serializers.CharField(source='selected_option.text', read_only=True)
+    selected_options = serializers.SerializerMethodField()
+    selected_option_texts = serializers.SerializerMethodField()
+    correct_option_ids = serializers.SerializerMethodField()
+    correct_option_texts = serializers.SerializerMethodField()
+    correct_text_answer = serializers.CharField(source='question.correct_text_answer', read_only=True)
 
     class Meta:
         model = StudentAnswer
-        fields = ('question', 'question_text', 'selected_option', 'selected_option_text', 'text_answer', 'is_correct')
+        fields = (
+            'question',
+            'question_text',
+            'question_type',
+            'selected_option',
+            'selected_option_text',
+            'selected_options',
+            'selected_option_texts',
+            'text_answer',
+            'is_correct',
+            'correct_option_ids',
+            'correct_option_texts',
+            'correct_text_answer',
+        )
+
+    def get_selected_options(self, obj):
+        return list(obj.selected_options.values_list('id', flat=True))
+
+    def get_selected_option_texts(self, obj):
+        return list(obj.selected_options.values_list('text', flat=True))
+
+    def get_correct_option_ids(self, obj):
+        return list(obj.question.answer_options.filter(is_correct=True).values_list('id', flat=True))
+
+    def get_correct_option_texts(self, obj):
+        return list(obj.question.answer_options.filter(is_correct=True).values_list('text', flat=True))
 
 
 class GradeSerializer(serializers.ModelSerializer):
@@ -216,12 +264,14 @@ class GradeSerializer(serializers.ModelSerializer):
 class AttemptSerializer(serializers.ModelSerializer):
     answers = StudentAnswerResultSerializer(many=True, read_only=True)
     grade = GradeSerializer(read_only=True)
+    quiz_summary = AttemptQuizSummarySerializer(source='quiz', read_only=True)
 
     class Meta:
         model = Attempt
         fields = (
             'id',
             'quiz',
+            'quiz_summary',
             'student',
             'started_at',
             'submitted_at',

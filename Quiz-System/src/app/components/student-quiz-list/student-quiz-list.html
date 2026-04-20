@@ -1,0 +1,48 @@
+<section class="panel">
+  <div class="panel-header">
+    <div>
+      <p class="section-tag">Published quizzes</p>
+      <h2>Available quizzes</h2>
+    </div>
+  </div>
+
+  @if (error) {
+    <p class="feedback error">{{ error }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="state-copy">Loading published quizzes...</p>
+  } @else if (quizzes.length === 0) {
+    <div class="empty-state">
+      <h3>No published quizzes yet</h3>
+      <p>Once a teacher publishes a quiz, it will show up here automatically.</p>
+    </div>
+  } @else {
+    <div class="quiz-grid">
+      @for (quiz of quizzes; track quiz.id) {
+        <article class="quiz-card">
+          <div class="quiz-top">
+            <span class="pill">{{ quiz.questions.length }} questions</span>
+            <span class="pill warm">{{ quiz.duration }} min</span>
+          </div>
+
+          <h3>{{ quiz.title }}</h3>
+          <p>{{ quiz.description || 'No description provided for this quiz.' }}</p>
+
+          <div class="meta">
+            <span>{{ quiz.max_score }} points</span>
+            <span>{{ formatDate(quiz.updated_at) }}</span>
+          </div>
+
+          @if (hasInProgressAttempt(quiz.id)) {
+            <p class="resume-copy">You already have an active attempt in this browser session.</p>
+          }
+
+          <a class="action-link" [routerLink]="['/student/quizzes', quiz.id]">
+            {{ getAttemptLabel(quiz.id) }}
+          </a>
+        </article>
+      }
+    </div>
+  }
+</section>

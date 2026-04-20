@@ -1,0 +1,103 @@
+<section class="panel">
+  <a class="back-link" routerLink="/student/quizzes">Back to quizzes</a>
+
+  @if (error) {
+    <p class="feedback error">{{ error }}</p>
+  }
+
+  @if (!session && !error) {
+    <p class="state-copy">Loading attempt...</p>
+  } @else if (session && currentQuestion) {
+    <div class="attempt-layout">
+      <aside class="sidebar-card">
+        <p class="section-tag">Timed attempt</p>
+        <h2>{{ quizTitle }}</h2>
+        <div class="timer" [class.danger]="remainingSeconds <= 60">
+          {{ formatTime(remainingSeconds) }}
+        </div>
+        <p class="sidebar-copy">{{ answeredCount }} / {{ questions.length }} answered</p>
+
+        <div class="navigator">
+          @for (question of questions; track question.id; let index = $index) {
+            <button
+              type="button"
+              class="nav-chip"
+              [class.active]="isCurrentQuestion(index)"
+              [class.done]="isAnswered(question.id)"
+              (click)="selectQuestion(index)"
+            >
+              {{ index + 1 }}
+            </button>
+          }
+        </div>
+
+        <button type="button" class="submit-button" [disabled]="isSubmitting" (click)="submitAttempt()">
+          {{ isSubmitting ? 'Submitting and auto-checking...' : 'Submit quiz' }}
+        </button>
+      </aside>
+
+      <article class="question-card">
+        <div class="question-head">
+          <div>
+            <p class="section-tag">Question {{ currentQuestionIndex + 1 }}</p>
+            <h3>{{ currentQuestion.text }}</h3>
+          </div>
+          <span class="points-pill">{{ currentQuestion.points }} pts</span>
+        </div>
+
+        @if (currentQuestion.question_type === 'short_answer') {
+          <label class="answer-block">
+            Your answer
+            <textarea
+              rows="5"
+              [ngModel]="answerState(currentQuestion.id).textAnswer"
+              (ngModelChange)="updateTextAnswer(currentQuestion.id, $event)"
+              placeholder="Type your answer here"
+            ></textarea>
+          </label>
+        } @else if (isCheckboxQuestion(currentQuestion)) {
+          <div class="option-list">
+            @for (option of currentQuestion.answer_options; track option.id) {
+              <label class="option-row">
+                <input
+                  type="checkbox"
+                  [checked]="isOptionChecked(currentQuestion.id, option.id)"
+                  (change)="toggleCheckboxAnswer(currentQuestion.id, option.id, $any($event.target).checked)"
+                />
+                <span>{{ option.text }}</span>
+              </label>
+            }
+          </div>
+        } @else {
+          <div class="option-list">
+            @for (option of currentQuestion.answer_options; track option.id) {
+              <label class="option-row">
+                <input
+                  type="radio"
+                  [name]="'question-' + currentQuestion.id"
+                  [checked]="answerState(currentQuestion.id).selectedOptionId === option.id"
+                  (change)="updateRadioAnswer(currentQuestion.id, option.id)"
+                />
+                <span>{{ option.text }}</span>
+              </label>
+            }
+          </div>
+        }
+
+        <div class="footer-actions">
+          <button type="button" class="ghost-button" [disabled]="currentQuestionIndex === 0" (click)="previousQuestion()">
+            Previous
+          </button>
+          <button
+            type="button"
+            class="accent-button"
+            [disabled]="currentQuestionIndex === questions.length - 1"
+            (click)="nextQuestion()"
+          >
+            Next
+          </button>
+        </div>
+      </article>
+    </div>
+  }
+</section>

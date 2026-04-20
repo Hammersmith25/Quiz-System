@@ -76,6 +76,7 @@ def grade_quiz_submission(*, attempt: Attempt, answers_payload):
     for question in questions:
         submitted_answer = provided_answers.get(question.id, {})
         selected_option = None
+        selected_options = []
         text_answer = submitted_answer.get('text_answer', '')
         is_correct = False
 
@@ -83,22 +84,38 @@ def grade_quiz_submission(*, attempt: Attempt, answers_payload):
             is_correct = _normalize_text(text_answer) == _normalize_text(question.correct_text_answer)
         else:
             selected_option_id = submitted_answer.get('selected_option')
-            if selected_option_id:
-                selected_option = question.answer_options.filter(id=selected_option_id).first()
-            if selected_option is None and selected_option_id is not None:
-                raise ValidationError(f'Option {selected_option_id} does not belong to question {question.id}.')
-            is_correct = bool(selected_option and selected_option.is_correct)
+            selected_option_ids = submitted_answer.get('selected_options')
+
+            if selected_option_ids is None:
+                selected_option_ids = [selected_option_id] if selected_option_id is not None else []
+
+            if len(selected_option_ids) != len(set(selected_option_ids)):
+                raise ValidationError(f'Question {question.id} contains duplicate selected options.')
+
+            if selected_option_ids:
+                selected_options = list(question.answer_options.filter(id__in=selected_option_ids))
+                if len(selected_options) != len(selected_option_ids):
+                    raise ValidationError(f'One or more options do not belong to question {question.id}.')
+
+            if len(selected_options) == 1:
+                selected_option = selected_options[0]
+
+            correct_option_ids = set(question.answer_options.filter(is_correct=True).values_list('id', flat=True))
+            submitted_option_ids = {option.id for option in selected_options}
+            is_correct = bool(submitted_option_ids) and submitted_option_ids == correct_option_ids
 
         if is_correct:
             earned_points += question.points
 
-        StudentAnswer.objects.create(
+        student_answer = StudentAnswer.objects.create(
             attempt=attempt,
             question=question,
             selected_option=selected_option,
             text_answer=text_answer,
             is_correct=is_correct,
         )
+        if selected_options:
+            student_answer.selected_options.set(selected_options)
 
     percentage = Decimal('0.00')
     if total_points:

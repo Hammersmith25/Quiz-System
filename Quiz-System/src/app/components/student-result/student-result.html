@@ -1,0 +1,58 @@
+<section class="panel">
+  <a class="back-link" routerLink="/student/grades">Go to grades</a>
+
+  @if (error) {
+    <p class="feedback error">{{ error }}</p>
+  }
+
+  @if (isLoading) {
+    <p class="state-copy">Loading result...</p>
+  } @else if (attempt) {
+    <article class="result-card">
+      <div class="result-head">
+        <div>
+          <p class="section-tag">Result screen</p>
+          <h2>{{ attempt.quiz_summary.title }}</h2>
+          <p class="subtitle">Auto-check completed for this attempt.</p>
+        </div>
+        <app-grade-badge [grade]="attempt.grade?.letter_grade" />
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span>Score</span>
+          <strong>{{ attempt.score }} / {{ attempt.max_score }}</strong>
+        </div>
+        <div class="metric-box">
+          <span>Percentage</span>
+          <strong>{{ attempt.percentage }}%</strong>
+        </div>
+        <div class="metric-box">
+          <span>Correct</span>
+          <strong>{{ correctCount }}</strong>
+        </div>
+        <div class="metric-box">
+          <span>Wrong</span>
+          <strong>{{ wrongCount }}</strong>
+        </div>
+      </div>
+
+      <div class="breakdown-list">
+        @for (answer of attempt.answers; track answer.question; let index = $index) {
+          <div class="breakdown-row" [class.correct]="answer.is_correct" [class.wrong]="!answer.is_correct">
+            <div>
+              <strong>Q{{ index + 1 }}</strong>
+              <p>{{ answer.question_text }}</p>
+            </div>
+            <span>{{ answer.is_correct ? 'Correct' : 'Wrong' }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="actions">
+        <a class="ghost-link" [routerLink]="['/student/attempts', attempt.id]">View attempt detail</a>
+        <a class="accent-link" routerLink="/student/quizzes">Back to quiz list</a>
+      </div>
+    </article>
+  }
+</section>

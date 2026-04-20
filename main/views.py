@@ -158,6 +158,21 @@ class StudentHistoryView(ListAPIView):
         return Attempt.objects.filter(student=self.request.user).select_related('quiz', 'grade')
 
 
+class StudentAttemptDetailView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def get(self, request, pk):
+        attempt = get_object_or_404(
+            Attempt.objects.select_related('quiz', 'grade', 'student').prefetch_related(
+                'answers__selected_options',
+                'answers__question__answer_options',
+            ),
+            pk=pk,
+            student=request.user,
+        )
+        return Response(AttemptSerializer(attempt).data)
+
+
 class StudentListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsTeacher]
     serializer_class = StudentListSerializer

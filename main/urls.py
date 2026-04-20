@@ -8,6 +8,7 @@ from .views import (
     QuizViewSet,
     RegisterView,
     StartAttemptView,
+    StudentAttemptDetailView,
     StudentHistoryView,
     StudentListView,
     SubmitAttemptView,
@@ -24,6 +25,7 @@ urlpatterns = [
     path('auth/logout/', LogoutView.as_view(), name='token_logout'),
     path('attempt/start/', StartAttemptView.as_view(), name='attempt_start'),
     path('attempt/submit/', SubmitAttemptView.as_view(), name='attempt_submit'),
+    path('attempts/<int:pk>/', StudentAttemptDetailView.as_view(), name='student_attempt_detail'),
     path('students/', StudentListView.as_view(), name='student_list'),
     path('history/', StudentHistoryView.as_view(), name='student_history'),
 ]

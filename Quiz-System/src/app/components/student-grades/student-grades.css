@@ -1,0 +1,73 @@
+.panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.panel-header h2,
+.empty-state h3 {
+  margin: 0;
+}
+
+.section-tag {
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: #9f5b12;
+}
+
+.feedback {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+}
+
+.error {
+  background: rgba(229, 82, 82, 0.12);
+  color: #8e1d1d;
+}
+
+.state-copy,
+.empty-state p {
+  color: #675848;
+}
+
+.empty-state {
+  border: 1px dashed rgba(159, 91, 18, 0.24);
+  border-radius: 24px;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(255, 249, 239, 0.72);
+}
+
+.table-shell {
+  overflow-x: auto;
+  border: 1px solid rgba(159, 91, 18, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 250, 241, 0.88);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+th,
+td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(159, 91, 18, 0.1);
+}
+
+th {
+  color: #7a4b0c;
+  font-size: 0.83rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+td a {
+  color: #7a4b0c;
+  font-weight: 700;
+}

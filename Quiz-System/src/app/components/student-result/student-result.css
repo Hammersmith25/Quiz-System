@@ -1,0 +1,132 @@
+.panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.back-link {
+  justify-self: start;
+  color: #7a4b0c;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.feedback {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+}
+
+.error {
+  background: rgba(229, 82, 82, 0.12);
+  color: #8e1d1d;
+}
+
+.state-copy,
+.subtitle,
+.breakdown-row p {
+  color: #675848;
+}
+
+.result-card {
+  display: grid;
+  gap: 1.25rem;
+  border: 1px solid rgba(159, 91, 18, 0.14);
+  border-radius: 24px;
+  padding: 1.5rem;
+  background: rgba(255, 250, 241, 0.9);
+}
+
+.result-head,
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.section-tag {
+  margin: 0 0 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: #9f5b12;
+}
+
+.result-card h2 {
+  margin: 0;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.metric-box,
+.breakdown-row {
+  border-radius: 20px;
+  border: 1px solid rgba(159, 91, 18, 0.12);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.metric-box {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem;
+}
+
+.metric-box span {
+  color: #7a6652;
+}
+
+.metric-box strong {
+  font-size: 1.5rem;
+}
+
+.breakdown-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+}
+
+.breakdown-row.correct {
+  box-shadow: inset 0 0 0 2px rgba(29, 201, 115, 0.26);
+}
+
+.breakdown-row.wrong {
+  box-shadow: inset 0 0 0 2px rgba(229, 82, 82, 0.18);
+}
+
+.ghost-link,
+.accent-link {
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 0.9rem 1.15rem;
+  font-weight: 800;
+}
+
+.ghost-link {
+  background: rgba(90, 75, 52, 0.08);
+  color: #533612;
+}
+
+.accent-link {
+  background: linear-gradient(135deg, #df8d2d, #ffd692);
+  color: #533612;
+}
+
+@media (max-width: 760px) {
+  .result-head,
+  .actions,
+  .breakdown-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

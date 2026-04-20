@@ -1,78 +1,109 @@
-.student-page {
+.student-shell {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #0f1113;
-  color: #e0e0e0;
+  padding: 2rem;
+  background:
+    radial-gradient(circle at top left, rgba(0, 237, 160, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(255, 163, 81, 0.12), transparent 24%),
+    linear-gradient(180deg, #07131a 0%, #0c141d 52%, #10111a 100%);
+  color: #edf5f3;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.student-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  color: #78f4c5;
+}
+
+.student-hero h1 {
+  margin: 0;
+  max-width: 11ch;
+  font-size: clamp(2rem, 3vw, 3.6rem);
+  line-height: 0.96;
+}
+
+.hero-copy {
+  max-width: 65ch;
+  margin-top: 1rem;
+  color: #b8c7c5;
+  line-height: 1.6;
+}
+
+.hero-card,
+.student-content,
+.student-navbar {
+  border: 1px solid rgba(120, 244, 197, 0.18);
+  border-radius: 24px;
+  background: rgba(9, 17, 24, 0.72);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.hero-card {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  align-content: start;
+}
+
+.hero-label {
+  color: #8da5a2;
+  font-size: 0.85rem;
 }
 
 .student-navbar {
-  height: 72px;
-  padding: 0 1.5rem;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #242830;
-  background: #13161c;
-}
-
-.student-brand {
-  color: #4fffb0;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
-.nav-actions {
-  display: flex;
-  gap: 0.65rem;
-}
-
-.nav-actions button {
-  border: 1px solid #3a3f47;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 0;
   background: transparent;
-  color: #d2d6dc;
-  border-radius: 10px;
-  padding: 0.5rem 0.9rem;
-  font-size: 13px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.student-navbar a {
+  border: 1px solid rgba(120, 244, 197, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #edf5f3;
+  text-decoration: none;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
 }
 
-.nav-actions button:hover {
-  border-color: #4fffb0;
-  color: #4fffb0;
-}
-
-.nav-actions button.active {
-  border-color: #4fffb0;
-  background: #4fffb0;
-  color: #12141a;
+.student-navbar a:hover,
+.student-navbar a.active {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #78f4c5, #dffb95);
+  border-color: transparent;
+  color: #092127;
 }
 
 .student-content {
-  flex: 1;
-  display: grid;
-  place-content: center;
-  text-align: center;
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
-h1 {
-  margin: 0 0 0.5rem;
-  color: #4fffb0;
-}
+@media (max-width: 900px) {
+  .student-shell {
+    padding: 1rem;
+  }
 
-p {
-  margin: 0;
-  color: #9aa0a8;
-}
-
-@media (max-width: 600px) {
-  .student-navbar {
-    flex-direction: column;
-    height: auto;
-    gap: 0.75rem;
-    padding: 0.8rem 1rem;
+  .student-hero {
+    grid-template-columns: 1fr;
   }
 }

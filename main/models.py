@@ -91,6 +91,11 @@ class StudentAnswer(models.Model):
         blank=True,
         related_name='selected_answers',
     )
+    selected_options = models.ManyToManyField(
+        AnswerOption,
+        blank=True,
+        related_name='selected_multi_answers',
+    )
     text_answer = models.CharField(max_length=255, blank=True)
     is_correct = models.BooleanField(default=False)
 
