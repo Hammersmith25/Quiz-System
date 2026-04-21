@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {FormArray,ReactiveFormsModule,UntypedFormBuilder,UntypedFormGroup,Validators,} from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth';
@@ -32,7 +32,6 @@ export class TeacherHomeComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private quizService: QuizService,
     public authService: AuthService,
-    private cdr: ChangeDetectorRef
   ) {
     this.quizForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.maxLength(255)]],
@@ -115,7 +114,6 @@ export class TeacherHomeComponent implements OnInit {
               this.quizResults = [];
             }
           }
-          this.cdr.detectChanges();
         },
         error: () => {
           this.listError = 'Unable to load your quizzes right now.';
@@ -124,7 +122,10 @@ export class TeacherHomeComponent implements OnInit {
   }
 
   onLogout(): void {
-    this.authService.logout();
+    this.authService.logout().subscribe({
+      error: () => {
+      },
+    });
   }
 
   createQuiz(): void {
@@ -208,8 +209,8 @@ export class TeacherHomeComponent implements OnInit {
             ? 'Quiz created successfully.'
             : 'Quiz updated successfully.';
           this.editingQuizId = quiz.id;
-          this.replaceQuizInList(quiz);
           this.selectedResultsQuizId = quiz.id;
+          this.loadQuizzes();
         },
         error: (error) => {
           this.builderError = this.extractApiError(error, 'Unable to save this quiz.');
@@ -227,16 +228,16 @@ export class TeacherHomeComponent implements OnInit {
 
     this.quizService.deleteQuiz(quiz.id).subscribe({
       next: () => {
-        this.quizzes = this.quizzes.filter((item) => item.id !== quiz.id);
-
         if (this.editingQuizId === quiz.id) {
           this.createQuiz();
         }
 
         if (this.selectedResultsQuizId === quiz.id) {
-          this.selectedResultsQuizId = this.quizzes[0]?.id ?? null;
+          this.selectedResultsQuizId = null;
           this.quizResults = [];
         }
+
+        this.loadQuizzes();
       },
       error: (error) => {
         this.listError = this.extractApiError(error, 'Unable to delete this quiz.');
@@ -253,18 +254,15 @@ export class TeacherHomeComponent implements OnInit {
 
     request$.subscribe({
       next: () => {
-        this.quizzes = this.quizzes.map((item) =>
-          item.id === quiz.id ? { ...item, is_published: !item.is_published } : item
-        );
+        const nextPublishedState = !quiz.is_published;
 
         if (this.editingQuizId === quiz.id) {
-          const currentQuiz = this.quizzes.find((item) => item.id === quiz.id);
-          if (currentQuiz) {
-            this.builderSuccess = currentQuiz.is_published
-              ? 'Quiz published successfully.'
-              : 'Quiz moved back to draft.';
-          }
+          this.builderSuccess = nextPublishedState
+            ? 'Quiz published successfully.'
+            : 'Quiz moved back to draft.';
         }
+
+        this.loadQuizzes();
       },
       error: (error) => {
         this.listError = this.extractApiError(error, 'Unable to change publish status.');
@@ -397,18 +395,6 @@ export class TeacherHomeComponent implements OnInit {
   formatDate(value: string): string {
     return new Date(value).toLocaleString();
   }
-
-  private replaceQuizInList(quiz: TeacherQuiz): void {
-    const existingIndex = this.quizzes.findIndex((item) => item.id === quiz.id);
-
-    if (existingIndex === -1) {
-      this.quizzes = [quiz, ...this.quizzes];
-      return;
-    }
-
-    this.quizzes = this.quizzes.map((item) => (item.id === quiz.id ? quiz : item));
-  }
-
   private validateBuilder(): boolean {
     this.quizForm.markAllAsTouched();
 

@@ -156,11 +156,11 @@ export class QuizService {
   constructor(private http: HttpClient) {}
 
   getTeacherQuizzes(): Observable<TeacherQuiz[]> {
-    return this.http.get<TeacherQuiz[]>(`${this.apiBaseUrl}/quizzes/`);
+    return this.http.get<TeacherQuiz[]>(`${this.apiBaseUrl}/quizzes/?audience=teacher`);
   }
 
   getStudentQuizzes(): Observable<StudentQuiz[]> {
-    return this.http.get<StudentQuiz[]>(`${this.apiBaseUrl}/quizzes/`);
+    return this.http.get<StudentQuiz[]>(`${this.apiBaseUrl}/quizzes/?audience=student`);
   }
 
   getStudentQuiz(quizId: number): Observable<StudentQuiz> {

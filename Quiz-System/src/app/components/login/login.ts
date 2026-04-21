@@ -32,6 +32,9 @@ export class LoginComponent {
     this.auth.login(data).subscribe({
       next: (res: any) => {
         this.auth.setToken(res.access);
+        if (res.refresh) {
+          this.auth.setRefreshToken(res.refresh);
+        }
         const role = res.role ?? res.user?.role ?? this.auth.getRole();
         if (role) {
           this.auth.setRole(role);
@@ -44,11 +47,5 @@ export class LoginComponent {
         this.error = 'Invalid credentials';
       }
     });
-  }
-
-  mockLogin(role: 'Student' | 'Teacher') {
-    this.auth.setToken('mock-token');
-    this.auth.setRole(role);
-    this.router.navigate([this.auth.getRoleHomeRoute(role)]);
   }
 }

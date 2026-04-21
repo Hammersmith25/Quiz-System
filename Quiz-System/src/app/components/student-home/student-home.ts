@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth';
 
 @Component({
@@ -11,7 +12,11 @@ import { AuthService } from '../../services/auth';
   styleUrl: './student-home.css',
 })
 export class StudentHomeComponent {
-  constructor(private authService: AuthService) {}
+  isLoggingOut = false;
+
+  constructor(
+    private authService: AuthService,
+  ) {}
 
   get studentName(): string {
     const token = this.authService.getToken();
@@ -30,5 +35,23 @@ export class StudentHomeComponent {
     } catch {
       return 'Student';
     }
+  }
+
+  logout(): void {
+    if (this.isLoggingOut) {
+      return;
+    }
+
+    this.isLoggingOut = true;
+
+    this.authService
+      .logout()
+      .pipe(finalize(() => {
+        this.isLoggingOut = false;
+      }))
+      .subscribe({
+        error: () => {
+        },
+      });
   }
 }

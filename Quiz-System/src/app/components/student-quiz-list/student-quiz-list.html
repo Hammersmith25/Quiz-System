@@ -22,7 +22,7 @@
       @for (quiz of quizzes; track quiz.id) {
         <article class="quiz-card">
           <div class="quiz-top">
-            <span class="pill">{{ quiz.questions.length }} questions</span>
+            <span class="pill">{{ getQuestionCount(quiz) }} questions</span>
             <span class="pill warm">{{ quiz.duration }} min</span>
           </div>
 

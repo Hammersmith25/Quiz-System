@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { finalize, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private tokenKey = 'token';
+  private refreshTokenKey = 'refresh';
   private roleKey = 'role';
   private apiUrl = 'http://localhost:8000/api/auth/';
 
@@ -20,8 +23,20 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  setRefreshToken(token: string) {
+    localStorage.setItem(this.refreshTokenKey, token);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.refreshTokenKey);
+  }
+
   removeToken() {
     localStorage.removeItem(this.tokenKey);
+  }
+
+  removeRefreshToken() {
+    localStorage.removeItem(this.refreshTokenKey);
   }
 
   setRole(role: string) {
@@ -51,6 +66,7 @@ export class AuthService {
 
   clearAuth() {
     this.removeToken();
+    this.removeRefreshToken();
     localStorage.removeItem(this.roleKey);
   }
 
@@ -67,15 +83,21 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}login/`, credentials);
   }
 
+  
+
   register(payload: any) {
     return this.http.post(`${this.apiUrl}register/`, payload);
   }
 
-  logout() {
-    this.http.post(`${this.apiUrl}logout/`, {}).subscribe({
-      next: () => this.finalizeLogout(),
-      error: () => this.finalizeLogout()
-    });
+  logout(): Observable<void> {
+    const refresh = this.getRefreshToken();
+
+    return this.http
+      .post(`${this.apiUrl}logout/`, refresh ? { refresh } : {})
+      .pipe(
+        map(() => void 0),
+        finalize(() => this.finalizeLogout()),
+      );
   }
 
   private finalizeLogout() {
