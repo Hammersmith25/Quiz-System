@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit,ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { interval, Subscription, finalize } from 'rxjs';
@@ -31,6 +31,7 @@ export class StudentAttemptComponent implements OnInit, OnDestroy {
     private router: Router,
     private quizService: QuizService,
     private attemptSessionService: AttemptSessionService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -51,6 +52,7 @@ export class StudentAttemptComponent implements OnInit, OnDestroy {
       Math.floor((new Date(this.session.expiresAt).getTime() - Date.now()) / 1000),
     );
     this.startTimer();
+    this.cdr.markForCheck();
   }
 
   ngOnDestroy(): void {
@@ -75,6 +77,7 @@ export class StudentAttemptComponent implements OnInit, OnDestroy {
 
   selectQuestion(index: number): void {
     this.currentQuestionIndex = index;
+    this.cdr.markForCheck();
   }
 
   isAnswered(questionId: number): boolean {
@@ -95,6 +98,7 @@ export class StudentAttemptComponent implements OnInit, OnDestroy {
     answer.selectedOptionId = optionId;
     answer.selectedOptionIds = [optionId];
     this.persist();
+    this.cdr.markForCheck();
   }
 
   toggleCheckboxAnswer(questionId: number, optionId: number, checked: boolean): void {
@@ -110,6 +114,7 @@ export class StudentAttemptComponent implements OnInit, OnDestroy {
     answer.selectedOptionIds = Array.from(next);
     answer.selectedOptionId = answer.selectedOptionIds[0] ?? null;
     this.persist();
+    this.cdr.markForCheck();
   }
 
   updateTextAnswer(questionId: number, value: string): void {
@@ -125,12 +130,15 @@ export class StudentAttemptComponent implements OnInit, OnDestroy {
   previousQuestion(): void {
     if (this.currentQuestionIndex > 0) {
       this.currentQuestionIndex -= 1;
+      this.cdr.markForCheck();
     }
+    
   }
 
   nextQuestion(): void {
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex += 1;
+      this.cdr.markForCheck();
     }
   }
 
@@ -154,18 +162,22 @@ export class StudentAttemptComponent implements OnInit, OnDestroy {
           this.timerSubscription?.unsubscribe();
           this.attemptSessionService.clear(this.session!.attemptId);
           this.router.navigate(['/student/attempts', attempt.id, 'result']);
+           this.cdr.markForCheck();
         },
         error: () => {
           this.error = 'Unable to submit your quiz. Please try again.';
+           this.cdr.markForCheck();
         },
       });
   }
 
   formatTime(seconds: number): string {
     const safeSeconds = Math.max(0, seconds);
-    const minutes = Math.floor(safeSeconds / 60);
+    const hours = Math.floor(safeSeconds / 3600);
+    const minutes = Math.floor((safeSeconds % 3600) / 60);
     const remainder = safeSeconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}`;
+
+    return [hours, minutes, remainder].map((value) => String(value).padStart(2, '0')).join(':');
   }
 
   private startTimer(): void {
@@ -181,6 +193,7 @@ export class StudentAttemptComponent implements OnInit, OnDestroy {
         Math.floor((new Date(this.session.expiresAt).getTime() - Date.now()) / 1000),
       );
       this.remainingSeconds = seconds;
+      this.cdr.markForCheck();
 
       if (seconds === 0) {
         this.submitAttempt();

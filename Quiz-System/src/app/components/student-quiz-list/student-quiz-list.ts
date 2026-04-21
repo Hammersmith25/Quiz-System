@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -21,42 +21,33 @@ export class StudentQuizListComponent implements OnInit {
   constructor(
     private quizService: QuizService,
     private attemptSessionService: AttemptSessionService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.loadQuizzes();
+    
   }
 
   loadQuizzes(): void {
     this.isLoading = true;
     this.error = '';
 
-    this.quizService
-      .getStudentQuizzes()
-      .pipe(finalize(() => {
+    this.quizService.getStudentQuizzes().subscribe({
+      next: (quizzes) => {
+        console.log('Component received:', quizzes);
+
+        this.quizzes = quizzes;
         this.isLoading = false;
-      }))
-      .subscribe({
-        next: (quizzes) => {
-          this.quizzes = quizzes.filter((quiz) => quiz.is_published);
-          if (quizzes.length === 0) {
-            this.error = '';
-          }
-        },
-        error: (error: HttpErrorResponse) => {
-          if (error.status === 401) {
-            this.error = 'Your session is invalid or expired. Please log in again.';
-            return;
-          }
-
-          if (error.status === 403) {
-            this.error = 'Only students can open the published quiz list.';
-            return;
-          }
-
-          this.error = this.extractApiMessage(error) || 'Unable to load published quizzes right now.';
-        },
-      });
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+        this.error = 'Unable to load your quizzes right now.';
+        this.isLoading = false;
+         this.cdr.markForCheck();
+      }
+    });
   }
 
   getAttemptLabel(quizId: number): string {
@@ -73,6 +64,15 @@ export class StudentQuizListComponent implements OnInit {
 
   formatDate(value: string): string {
     return new Date(value).toLocaleString();
+  }
+
+  formatDuration(totalMinutes: number): string {
+    const totalSeconds = Math.max(0, Math.floor(Number(totalMinutes) * 60));
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':');
   }
 
   private extractApiMessage(error: HttpErrorResponse): string {

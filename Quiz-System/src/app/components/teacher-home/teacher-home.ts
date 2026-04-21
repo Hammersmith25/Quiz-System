@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {FormArray,ReactiveFormsModule,UntypedFormBuilder,UntypedFormGroup,Validators,} from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth';
@@ -32,10 +32,12 @@ export class TeacherHomeComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private quizService: QuizService,
     public authService: AuthService,
+    private cdr:ChangeDetectorRef,
   ) {
     this.quizForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.maxLength(255)]],
       description: [''],
+      duration: [30, [Validators.required, Validators.min(1)]],
       questions: this.formBuilder.array([]),
     });
   }
@@ -88,6 +90,7 @@ export class TeacherHomeComponent implements OnInit {
 
   setSection(section: 'list' | 'builder' | 'results'): void {
     this.activeSection = section;
+    this.cdr.markForCheck();
 
     if (section === 'results' && this.selectedResultsQuizId !== null) {
       this.loadResults(this.selectedResultsQuizId);
@@ -97,11 +100,13 @@ export class TeacherHomeComponent implements OnInit {
   loadQuizzes(): void {
     this.isLoadingQuizzes = true;
     this.listError = '';
+    this.cdr.markForCheck();
 
     this.quizService
       .getTeacherQuizzes()
       .pipe(finalize(() => {
         this.isLoadingQuizzes = false;
+        this.cdr.markForCheck();
       }))
       .subscribe({
         next: (quizzes) => {
@@ -114,9 +119,11 @@ export class TeacherHomeComponent implements OnInit {
               this.quizResults = [];
             }
           }
+          this.cdr.markForCheck();
         },
         error: () => {
           this.listError = 'Unable to load your quizzes right now.';
+          this.cdr.markForCheck();
         },
       });
   }
@@ -135,10 +142,12 @@ export class TeacherHomeComponent implements OnInit {
     this.quizForm.reset({
       title: '',
       description: '',
+      duration: 30,
     });
     this.questionForms.clear();
     this.addQuestion();
     this.setSection('builder');
+    this.cdr.markForCheck();
   }
 
   editQuiz(quiz: TeacherQuiz): void {
@@ -148,6 +157,7 @@ export class TeacherHomeComponent implements OnInit {
     this.quizForm.patchValue({
       title: quiz.title,
       description: quiz.description,
+      duration: quiz.duration,
     });
     this.questionForms.clear();
 
@@ -160,6 +170,7 @@ export class TeacherHomeComponent implements OnInit {
     }
 
     this.setSection('builder');
+    this.cdr.markForCheck();
   }
 
   duplicateQuiz(quiz: TeacherQuiz): void {
@@ -169,6 +180,7 @@ export class TeacherHomeComponent implements OnInit {
     this.quizForm.patchValue({
       title: `${quiz.title} Copy`,
       description: quiz.description,
+      duration: quiz.duration,
     });
     this.questionForms.clear();
     quiz.questions.forEach((question) => {
@@ -182,6 +194,7 @@ export class TeacherHomeComponent implements OnInit {
       }));
     });
     this.setSection('builder');
+    this.cdr.markForCheck();
   }
 
   saveQuiz(): void {
@@ -189,11 +202,13 @@ export class TeacherHomeComponent implements OnInit {
     this.builderSuccess = '';
 
     if (!this.validateBuilder()) {
+      this.cdr.markForCheck();
       return;
     }
 
     const payload = this.buildPayload();
     this.isSavingQuiz = true;
+    this.cdr.markForCheck();
 
     const request$ = this.editingQuizId === null
       ? this.quizService.createQuiz(payload)
@@ -202,6 +217,7 @@ export class TeacherHomeComponent implements OnInit {
     request$
       .pipe(finalize(() => {
         this.isSavingQuiz = false;
+        this.cdr.markForCheck();
       }))
       .subscribe({
         next: (quiz) => {
@@ -211,9 +227,11 @@ export class TeacherHomeComponent implements OnInit {
           this.editingQuizId = quiz.id;
           this.selectedResultsQuizId = quiz.id;
           this.loadQuizzes();
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.builderError = this.extractApiError(error, 'Unable to save this quiz.');
+          this.cdr.markForCheck();
         },
       });
   }
@@ -225,6 +243,7 @@ export class TeacherHomeComponent implements OnInit {
     }
 
     this.listError = '';
+    this.cdr.markForCheck();
 
     this.quizService.deleteQuiz(quiz.id).subscribe({
       next: () => {
@@ -238,15 +257,18 @@ export class TeacherHomeComponent implements OnInit {
         }
 
         this.loadQuizzes();
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.listError = this.extractApiError(error, 'Unable to delete this quiz.');
+        this.cdr.markForCheck();
       },
     });
   }
 
   togglePublish(quiz: TeacherQuiz): void {
     this.listError = '';
+    this.cdr.markForCheck();
 
     const request$ = quiz.is_published
       ? this.quizService.unpublishQuiz(quiz.id)
@@ -263,9 +285,11 @@ export class TeacherHomeComponent implements OnInit {
         }
 
         this.loadQuizzes();
+        this.cdr.markForCheck();
       },
       error: (error) => {
         this.listError = this.extractApiError(error, 'Unable to change publish status.');
+        this.cdr.markForCheck();
       },
     });
   }
@@ -279,19 +303,23 @@ export class TeacherHomeComponent implements OnInit {
   loadResults(quizId: number): void {
     this.resultsError = '';
     this.isLoadingResults = true;
+    this.cdr.markForCheck();
 
     this.quizService
       .getQuizResults(quizId)
       .pipe(finalize(() => {
         this.isLoadingResults = false;
+        this.cdr.markForCheck();
       }))
       .subscribe({
         next: (results) => {
           this.quizResults = results;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.quizResults = [];
           this.resultsError = this.extractApiError(error, 'Unable to load quiz results.');
+          this.cdr.markForCheck();
         },
       });
   }
@@ -299,6 +327,7 @@ export class TeacherHomeComponent implements OnInit {
   onResultsQuizChange(event: Event): void {
     const value = Number((event.target as HTMLSelectElement).value);
     this.selectedResultsQuizId = Number.isNaN(value) ? null : value;
+    this.cdr.markForCheck();
 
     if (this.selectedResultsQuizId !== null) {
       this.loadResults(this.selectedResultsQuizId);
@@ -307,10 +336,12 @@ export class TeacherHomeComponent implements OnInit {
 
   addQuestion(): void {
     this.questionForms.push(this.createQuestionForm());
+    this.cdr.markForCheck();
   }
 
   removeQuestion(index: number): void {
     this.questionForms.removeAt(index);
+    this.cdr.markForCheck();
   }
 
   answerOptions(questionIndex: number): FormArray {
@@ -325,13 +356,12 @@ export class TeacherHomeComponent implements OnInit {
     const questionForm = this.questionForms.at(questionIndex) as UntypedFormGroup;
     const questionType = questionForm.get('question_type')?.value as QuestionType;
     const options = this.answerOptions(questionIndex);
-
     if (questionType === 'true_false' || options.length <= 2) {
       return;
     }
 
     options.removeAt(optionIndex);
-
+    this.cdr.markForCheck();
     if (!options.controls.some((control) => control.get('is_correct')?.value === true) && options.length > 0) {
       options.at(0).get('is_correct')?.setValue(true);
     }
@@ -343,13 +373,16 @@ export class TeacherHomeComponent implements OnInit {
     });
   }
 
-  onQuestionTypeChange(questionIndex: number): void {
+  onQuestionTypeChange(questionIndex: number, nextType?: QuestionType): void {
     const questionForm = this.questionForms.at(questionIndex) as UntypedFormGroup;
-    const questionType = questionForm.get('question_type')?.value as QuestionType;
+    const questionType = nextType ?? (questionForm.get('question_type')?.value as QuestionType);
     const options = this.answerOptions(questionIndex);
+
+    questionForm.get('question_type')?.setValue(questionType, { emitEvent: false });
 
     if (questionType === 'short_answer') {
       options.clear();
+      this.cdr.markForCheck();
       return;
     }
 
@@ -358,6 +391,7 @@ export class TeacherHomeComponent implements OnInit {
       this.defaultTrueFalseOptions().forEach((option) => {
         options.push(this.createOptionForm(option));
       });
+      this.cdr.markForCheck();
       return;
     }
 
@@ -367,6 +401,8 @@ export class TeacherHomeComponent implements OnInit {
         options.push(this.createOptionForm(option));
       });
     }
+
+    this.cdr.markForCheck();
   }
 
   trackByQuizId(_index: number, quiz: TeacherQuiz): number {
@@ -395,11 +431,27 @@ export class TeacherHomeComponent implements OnInit {
   formatDate(value: string): string {
     return new Date(value).toLocaleString();
   }
+
+  formatDuration(totalMinutes: number): string {
+    const totalSeconds = Math.max(0, Math.floor(Number(totalMinutes) * 60));
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':');
+  }
+
   private validateBuilder(): boolean {
     this.quizForm.markAllAsTouched();
 
     if (this.quizForm.invalid) {
       this.builderError = 'Please fill in the quiz title before saving.';
+      return false;
+    }
+
+    const duration = Number(this.quizForm.get('duration')?.value ?? 0);
+    if (!Number.isFinite(duration) || duration < 1) {
+      this.builderError = 'Quiz duration must be at least 1 minute.';
       return false;
     }
 
@@ -443,6 +495,7 @@ export class TeacherHomeComponent implements OnInit {
     const rawValue = this.quizForm.getRawValue() as {
       title: string;
       description: string;
+      duration: number;
       questions: Array<{
         text: string;
         question_type: QuestionType;
@@ -455,6 +508,7 @@ export class TeacherHomeComponent implements OnInit {
     return {
       title: rawValue.title.trim(),
       description: rawValue.description.trim(),
+      duration: Number(rawValue.duration),
       questions: rawValue.questions.map((question) => ({
         text: question.text.trim(),
         question_type: question.question_type,
@@ -476,13 +530,14 @@ export class TeacherHomeComponent implements OnInit {
 
   private createQuestionForm(question?: QuizQuestion): UntypedFormGroup {
     const questionType = question?.question_type ?? 'multiple_choice';
+    const existingOptions = question?.answer_options ?? [];
     const options = questionType === 'short_answer'
       ? []
-      : question?.answer_options?.length
-        ? question.answer_options
-        : questionType === 'true_false'
-          ? this.defaultTrueFalseOptions()
-          : this.defaultMultipleChoiceOptions();
+      : questionType === 'true_false'
+        ? this.defaultTrueFalseOptions(existingOptions)
+        : existingOptions.length > 0
+        ? existingOptions
+        : this.defaultMultipleChoiceOptions();
 
     return this.formBuilder.group({
       text: [question?.text ?? '', Validators.required],
@@ -507,10 +562,19 @@ export class TeacherHomeComponent implements OnInit {
     ];
   }
 
-  private defaultTrueFalseOptions(): Array<{ text: string; is_correct: boolean }> {
+  private defaultTrueFalseOptions(
+    existingOptions?: Array<{ text: string; is_correct: boolean }>,
+  ): Array<{ text: string; is_correct: boolean }> {
+    const truthyOption = existingOptions?.find(
+      (option) => option.text.trim().toLowerCase() === 'true' || option.is_correct,
+    );
+    const falsyOption = existingOptions?.find(
+      (option) => option.text.trim().toLowerCase() === 'false' || option !== truthyOption,
+    );
+
     return [
-      { text: 'True', is_correct: true },
-      { text: 'False', is_correct: false },
+      { text: 'True', is_correct: truthyOption?.is_correct ?? true },
+      { text: 'False', is_correct: falsyOption?.is_correct ?? false },
     ];
   }
 

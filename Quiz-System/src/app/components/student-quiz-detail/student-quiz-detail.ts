@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AttemptSessionService } from '../../services/attempt-session';
@@ -17,12 +17,18 @@ export class StudentQuizDetailComponent implements OnInit {
   isLoading = false;
   isStarting = false;
   error = '';
+  readonly integrityRules = [
+    'Work independently and do not use outside help unless your teacher explicitly allows it.',
+    'Do not copy answers, share screenshots, or open the quiz for someone else.',
+    'Use the Start button only when you are ready to finish the attempt honestly in one sitting.',
+  ];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private quizService: QuizService,
     private attemptSessionService: AttemptSessionService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -55,11 +61,22 @@ export class StudentQuizDetailComponent implements OnInit {
       .subscribe({
         next: (quiz) => {
           this.quiz = quiz;
+           this.cdr.markForCheck();
         },
         error: () => {
           this.error = 'Unable to load this quiz.';
+           this.cdr.markForCheck();
         },
       });
+  }
+
+  formatDuration(totalMinutes: number): string {
+    const totalSeconds = Math.max(0, Math.floor(Number(totalMinutes) * 60));
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':');
   }
 
   startQuiz(): void {

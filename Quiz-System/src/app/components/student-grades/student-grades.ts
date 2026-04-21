@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { GradeBadgeComponent } from '../grade-badge/grade-badge';
@@ -17,7 +17,7 @@ export class StudentGradesComponent implements OnInit {
   isLoading = false;
   error = '';
 
-  constructor(private quizService: QuizService) {}
+  constructor(private quizService: QuizService, private cdr:ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadHistory();
@@ -31,13 +31,16 @@ export class StudentGradesComponent implements OnInit {
       .getStudentHistory()
       .pipe(finalize(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
       }))
       .subscribe({
         next: (attempts) => {
           this.attempts = attempts;
+          this.cdr.markForCheck();
         },
         error: () => {
           this.error = 'Unable to load your grade history.';
+          this.cdr.markForCheck();
         },
       });
   }

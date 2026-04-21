@@ -261,6 +261,12 @@ label {
   font-weight: 600;
 }
 
+.input-hint {
+  color: #8da5a2;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
 input,
 textarea,
 select {
@@ -313,6 +319,19 @@ select:focus {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.75rem;
+  align-items: center;
+}
+
+.option-static {
+  border: 1px solid rgba(120, 244, 197, 0.18);
+  border-radius: 16px;
+  background: rgba(1, 10, 15, 0.64);
+  color: #edf5f3;
+  padding: 0.9rem 1rem;
+  font: inherit;
+  box-sizing: border-box;
+  min-height: 54px;
+  display: flex;
   align-items: center;
 }
 

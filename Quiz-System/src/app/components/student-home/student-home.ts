@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component,ChangeDetectorRef } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth';
@@ -16,6 +16,7 @@ export class StudentHomeComponent {
 
   constructor(
     private authService: AuthService,
+    private cdr:ChangeDetectorRef,
   ) {}
 
   get studentName(): string {
@@ -43,14 +44,17 @@ export class StudentHomeComponent {
     }
 
     this.isLoggingOut = true;
+    this.cdr.markForCheck();
 
     this.authService
       .logout()
       .pipe(finalize(() => {
         this.isLoggingOut = false;
+        this.cdr.markForCheck();
       }))
       .subscribe({
         error: () => {
+          this.cdr.markForCheck();
         },
       });
   }

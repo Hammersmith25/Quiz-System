@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { GradeBadgeComponent } from '../grade-badge/grade-badge';
@@ -20,27 +20,33 @@ export class StudentResultComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private quizService: QuizService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     const attemptId = Number(this.route.snapshot.paramMap.get('attemptId'));
     if (Number.isNaN(attemptId)) {
       this.error = 'Attempt id is invalid.';
+      this.cdr.markForCheck();
       return;
     }
 
     this.isLoading = true;
+    this.cdr.markForCheck();
     this.quizService
       .getAttempt(attemptId)
       .pipe(finalize(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
       }))
       .subscribe({
         next: (attempt) => {
           this.attempt = attempt;
+          this.cdr.markForCheck();
         },
         error: () => {
           this.error = 'Unable to load this result screen.';
+          this.cdr.markForCheck();
         },
       });
   }

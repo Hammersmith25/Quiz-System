@@ -3,6 +3,13 @@
   gap: 1rem;
 }
 
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 .panel-header h2,
 .empty-state h3,
 .quiz-card h3 {
@@ -14,7 +21,7 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.72rem;
-  color: #9f5b12;
+  color: #78f4c5;
 }
 
 .feedback {
@@ -24,23 +31,23 @@
 }
 
 .error {
-  background: rgba(229, 82, 82, 0.12);
-  color: #8e1d1d;
+  background: rgba(255, 95, 95, 0.14);
+  color: #ffb7b7;
 }
 
 .state-copy,
 .quiz-card p,
 .empty-state p,
 .meta {
-  color: #675848;
+  color: #a2b1b2;
 }
 
 .empty-state {
-  border: 1px dashed rgba(159, 91, 18, 0.24);
-  border-radius: 24px;
+  border: 1px dashed rgba(120, 244, 197, 0.24);
+  border-radius: 20px;
   padding: 2rem;
   text-align: center;
-  background: rgba(255, 249, 239, 0.72);
+  background: rgba(1, 10, 15, 0.18);
 }
 
 .quiz-grid {
@@ -52,12 +59,11 @@
 .quiz-card {
   display: grid;
   gap: 0.9rem;
-  border: 1px solid rgba(159, 91, 18, 0.14);
-  border-radius: 24px;
+  border: 1px solid rgba(120, 244, 197, 0.14);
+  border-radius: 22px;
   padding: 1.25rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 246, 231, 0.84)),
-    radial-gradient(circle at top right, rgba(87, 200, 255, 0.08), transparent 30%);
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .quiz-top,
@@ -73,31 +79,38 @@
   align-items: center;
   border-radius: 999px;
   padding: 0.35rem 0.75rem;
-  background: rgba(87, 200, 255, 0.12);
-  color: #165b86;
+  background: rgba(255, 255, 255, 0.08);
+  color: #c6d6d5;
   font-size: 0.8rem;
   font-weight: 700;
 }
 
 .pill.warm {
-  background: rgba(223, 141, 45, 0.14);
-  color: #8f5300;
+  background: rgba(255, 207, 115, 0.12);
+  color: #ffd68a;
 }
 
 .resume-copy {
   margin: 0;
   padding: 0.75rem 0.9rem;
   border-radius: 16px;
-  background: rgba(29, 201, 115, 0.1);
-  color: #14733f;
+  background: rgba(120, 244, 197, 0.14);
+  color: #b8f8dd;
 }
 
 .action-link {
   justify-self: start;
+  border: 1px solid transparent;
   border-radius: 999px;
-  background: linear-gradient(135deg, #df8d2d, #ffd692);
-  color: #533612;
+  background: linear-gradient(135deg, #78f4c5, #dffb95);
+  color: #092127;
   text-decoration: none;
   padding: 0.85rem 1.1rem;
   font-weight: 800;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.action-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(120, 244, 197, 0.18);
 }

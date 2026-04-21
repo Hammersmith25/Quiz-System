@@ -5,7 +5,7 @@
 
 .back-link {
   justify-self: start;
-  color: #7a4b0c;
+  color: #7af5c6;
   text-decoration: none;
   font-weight: 700;
 }
@@ -17,23 +17,23 @@
 }
 
 .error {
-  background: rgba(229, 82, 82, 0.12);
-  color: #8e1d1d;
+  background: rgba(255, 95, 95, 0.14);
+  color: #ffb7b7;
 }
 
 .state-copy,
 .subtitle,
 .breakdown-row p {
-  color: #675848;
+  color: #a2b1b2;
 }
 
 .result-card {
   display: grid;
   gap: 1.25rem;
-  border: 1px solid rgba(159, 91, 18, 0.14);
+  border: 1px solid rgba(120, 244, 197, 0.14);
   border-radius: 24px;
   padding: 1.5rem;
-  background: rgba(255, 250, 241, 0.9);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .result-head,
@@ -49,11 +49,12 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.72rem;
-  color: #9f5b12;
+  color: #78f4c5;
 }
 
 .result-card h2 {
   margin: 0;
+  color: #edf5f3;
 }
 
 .metric-grid {
@@ -65,8 +66,8 @@
 .metric-box,
 .breakdown-row {
   border-radius: 20px;
-  border: 1px solid rgba(159, 91, 18, 0.12);
-  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(120, 244, 197, 0.14);
+  background: rgba(1, 10, 15, 0.38);
 }
 
 .metric-box {
@@ -76,11 +77,12 @@
 }
 
 .metric-box span {
-  color: #7a6652;
+  color: #8da5a2;
 }
 
 .metric-box strong {
   font-size: 1.5rem;
+  color: #edf5f3;
 }
 
 .breakdown-list {
@@ -97,11 +99,11 @@
 }
 
 .breakdown-row.correct {
-  box-shadow: inset 0 0 0 2px rgba(29, 201, 115, 0.26);
+  box-shadow: inset 0 0 0 2px rgba(120, 244, 197, 0.26);
 }
 
 .breakdown-row.wrong {
-  box-shadow: inset 0 0 0 2px rgba(229, 82, 82, 0.18);
+  box-shadow: inset 0 0 0 2px rgba(255, 95, 95, 0.18);
 }
 
 .ghost-link,
@@ -113,13 +115,14 @@
 }
 
 .ghost-link {
-  background: rgba(90, 75, 52, 0.08);
-  color: #533612;
+  border: 1px solid rgba(120, 244, 197, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #edf5f3;
 }
 
 .accent-link {
-  background: linear-gradient(135deg, #df8d2d, #ffd692);
-  color: #533612;
+  background: linear-gradient(135deg, #78f4c5, #dffb95);
+  color: #092127;
 }
 
 @media (max-width: 760px) {

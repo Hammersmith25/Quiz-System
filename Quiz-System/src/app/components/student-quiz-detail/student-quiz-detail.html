@@ -17,19 +17,30 @@
         </div>
 
         <div class="summary-card">
-          <span>{{ quiz.duration }} minutes</span>
+          <span>{{ formatDuration(quiz.duration) }}</span>
           <span>{{ quiz.questions.length }} questions</span>
           <span>{{ quiz.max_score }} total points</span>
         </div>
       </div>
 
-      <div class="question-preview-list">
-        @for (question of quiz.questions; track question.id; let index = $index) {
-          <div class="question-preview">
-            <strong>Q{{ index + 1 }}</strong>
-            <span>{{ question.text }}</span>
-          </div>
-        }
+      <div class="integrity-banner">
+        <div>
+          <p class="section-tag">Before you begin</p>
+          <h3>Starting this quiz means you agree to complete it honestly.</h3>
+        </div>
+
+        <div class="integrity-rules">
+          @for (rule of integrityRules; track rule) {
+            <div class="integrity-rule">
+              <strong>Check</strong>
+              <span>{{ rule }}</span>
+            </div>
+          }
+        </div>
+
+        <p class="integrity-copy">
+          Once you press Start, the timer begins and your current browser session will keep the active attempt open.
+        </p>
       </div>
 
       <div class="actions">
