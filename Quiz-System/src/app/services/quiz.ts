@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 export type QuestionType = 'multiple_choice' | 'true_false' | 'short_answer';
 
@@ -147,6 +147,8 @@ export interface SubmitAttemptAnswerPayload {
   text_answer?: string;
 }
 
+type ListResponse<T> = T[] | { results?: T[] };
+
 @Injectable({
   providedIn: 'root',
 })
@@ -156,11 +158,15 @@ export class QuizService {
   constructor(private http: HttpClient) {}
 
   getTeacherQuizzes(): Observable<TeacherQuiz[]> {
-    return this.http.get<TeacherQuiz[]>(`${this.apiBaseUrl}/quizzes/`);
+    return this.http
+      .get<ListResponse<TeacherQuiz>>(`${this.apiBaseUrl}/quizzes/`)
+      .pipe(map((response) => this.unwrapListResponse(response)));
   }
 
   getStudentQuizzes(): Observable<StudentQuiz[]> {
-    return this.http.get<StudentQuiz[]>(`${this.apiBaseUrl}/quizzes/`);
+    return this.http
+      .get<ListResponse<StudentQuiz>>(`${this.apiBaseUrl}/quizzes/`)
+      .pipe(map((response) => this.unwrapListResponse(response)));
   }
 
   getStudentQuiz(quizId: number): Observable<StudentQuiz> {
@@ -207,6 +213,20 @@ export class QuizService {
   }
 
   getStudentHistory(): Observable<StudentAttemptHistoryRow[]> {
-    return this.http.get<StudentAttemptHistoryRow[]>(`${this.apiBaseUrl}/history/`);
+    return this.http
+      .get<ListResponse<StudentAttemptHistoryRow>>(`${this.apiBaseUrl}/history/`)
+      .pipe(map((response) => this.unwrapListResponse(response)));
+  }
+
+  private unwrapListResponse<T>(response: ListResponse<T>): T[] {
+    if (Array.isArray(response)) {
+      return response;
+    }
+
+    if (response && Array.isArray(response.results)) {
+      return response.results;
+    }
+
+    return [];
   }
 }
