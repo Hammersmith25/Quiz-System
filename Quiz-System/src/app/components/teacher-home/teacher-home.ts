@@ -1,22 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import {
-  FormArray,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {FormArray,ReactiveFormsModule,UntypedFormBuilder,UntypedFormGroup,Validators,} from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth';
-import {
-  QuestionType,
-  QuizQuestion,
-  QuizResultRow,
-  QuizService,
-  TeacherQuiz,
-  TeacherQuizPayload,
-} from '../../services/quiz';
+import {QuestionType,QuizQuestion,QuizResultRow,QuizService,TeacherQuiz,TeacherQuizPayload,} from '../../services/quiz';
 
 @Component({
   selector: 'app-teacher-home',
@@ -44,7 +31,8 @@ export class TeacherHomeComponent implements OnInit {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private quizService: QuizService,
-    private authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     this.quizForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.maxLength(255)]],
@@ -127,11 +115,16 @@ export class TeacherHomeComponent implements OnInit {
               this.quizResults = [];
             }
           }
+          this.cdr.detectChanges();
         },
         error: () => {
           this.listError = 'Unable to load your quizzes right now.';
         },
       });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
   }
 
   createQuiz(): void {

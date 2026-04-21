@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
-
   private tokenKey = 'token';
   private roleKey = 'role';
+  private apiUrl = 'http://localhost:8000/api/auth/';
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   setToken(token: string) {
     localStorage.setItem(this.tokenKey, token);
@@ -62,11 +64,23 @@ export class AuthService {
   }
 
   login(credentials: any) {
-    return this.http.post('http://localhost:8000/api/auth/login/', credentials);
+    return this.http.post(`${this.apiUrl}login/`, credentials);
   }
 
   register(payload: any) {
-    return this.http.post('http://localhost:8000/api/auth/register/', payload);
+    return this.http.post(`${this.apiUrl}register/`, payload);
+  }
+
+  logout() {
+    this.http.post(`${this.apiUrl}logout/`, {}).subscribe({
+      next: () => this.finalizeLogout(),
+      error: () => this.finalizeLogout()
+    });
+  }
+
+  private finalizeLogout() {
+    this.clearAuth();
+    this.router.navigate(['/login']);
   }
 
   private normalizeRole(role: string): string {
@@ -77,10 +91,7 @@ export class AuthService {
   private extractRoleFromToken(token: string): string | null {
     try {
       const [, payload] = token.split('.');
-      if (!payload) {
-        return null;
-      }
-
+      if (!payload) return null;
       const json = JSON.parse(atob(payload));
       return (
         json.role ??

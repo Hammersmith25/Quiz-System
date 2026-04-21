@@ -10,6 +10,9 @@
     </div>
 
     <div class="hero-card">
+      <button class=" logout-btn" *ngIf="authService.isLoggedIn()" (click)="onLogout()">
+      Logout
+      </button>
       <span class="hero-label">Signed in as</span>
       <strong>{{ teacherName }}</strong>
       <span>{{ quizzes.length }} quizzes in your library</span>
@@ -93,7 +96,7 @@
           <h2>{{ builderHeading }}</h2>
         </div>
         <div class="builder-summary">
-          <span>{{ questionForms.length }} questions</span>
+          <span>{{ questionForms.length }} questions </span>
           <span>{{ totalPoints }} points total</span>
         </div>
       </div>
